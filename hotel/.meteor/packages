@@ -27,3 +27,5 @@ vuejs:blaze-integration
 accounts-facebook
 service-configuration
 useraccounts:bootstrap
+insecure
+accounts-base

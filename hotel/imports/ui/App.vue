@@ -3,46 +3,39 @@ simple-todos/imports/ui/App.vue »
   <div className="container">
     <header>
       <h1>Hotel controller</h1>
-    <h1 v-bind:text="currentUser"></h1>
-
-    <div v-if="not_logged">Email: <input type="email" name="email" v-model="email"></div>
-    <div v-if="not_logged">Password: <input type="password" name="password" v-model="password"></div>
-    <div v-if="not_logged"><input type="submit" value="Login" @click="login">
-    <input type="submit" value="Register as client" @click="register_client">
-    <input type="submit" value="Register as manager" @click="register_manager"></div>
-    <div v-if="logged"><input type="submit" value="logout" @click="logout"></div>
-
-
-    
-      <!-- <form className="new-task" @submit.prevent="handleSubmit">
-        <input
-          type="text"
-          placeholder="Type to add new tasks"
-          v-model="newTask"
-        />
-      </form> -->
-
-
+    <div v-if="username===null">
+      <div>Username: <input type="username" name="username" v-model="user"></div>
+      <div>Password: <input type="password" name="password" v-model="password"></div>
+      <div><input type="submit" value="Login" @click="login">
+      <input type="submit" value="Register as client" @click="register_client">
+      <input type="submit" value="Register as manager" @click="register_manager"></div>
+    </div>
+    <h1 v-if="username!=null">
+     {{username}} logged in as {{profile}}
+      <input type="submit" value="logout" @click="logout">
+    </h1>
     </header>
     <ul>
-        <Task v-for="task in tasks" v-bind:key="task._id" v-bind:task="task" />
+      <Items v-for="task in tasks" v-bind:key="task._id" v-bind:task="task" />
     </ul>
   </div>
 </template>
  
 <script>
 import Vue from "vue";
-import Task from "./Task.vue";
-import { Tasks } from "../api/tasks.js";
+// import Task from "./Task.vue";
 import { Meteor } from "meteor/meteor";
+import { Accounts } from 'meteor/accounts-base';
+import Items from "./Items.vue";
  
 export default {
-  components: {
-    Task
-  },
+//   components: {
+//     Task
+//   },
   data() {
     return {
-      email:"",
+      user:"",
+      username:null,
       password:"",
       guest:"guest",
       manager:"manager",
@@ -52,31 +45,44 @@ export default {
       not_logged:true,
       logged:false,
       userID:"",
-      username:"",
+      profile:null
     };
   },
   methods: {
     register_client(event)  {
-        Meteor.call("tasks.addUser",this.email,this.password,this.guest)
+        Meteor.call("addUser",this.user,this.password,this.guest, function(error){
+          alert(error.reason);
+        })
     },
     register_manager(event) {
-        Meteor.call("tasks.addUser",this.email,this.password,this.manager)
+        Meteor.call("addUser",this.user,this.password,this.manager, function(error){
+          alert(error.reason);
+        })
     },
     login(event){
-        Meteor.loginWithPassword(email,password)
+        Meteor.loginWithPassword(this.user,this.password, function(error){
+          alert(error.reason);
+        }),
+        this.username=Meteor.user().username;
+        this.profile=Meteor.user().profile;
     },
     logout(event){
-        Meteor.logout()
-    },
-    meteor: {
-        currentUser(){
-            return Meteor.user().username;
-        }
+        Meteor.logout(),
+        this.username=null
     }
+  },
 
+  meteor: {
+      not_logged(){
+          let him="ddd";
+          return him
+      },
+      items(){
 
-    
-
+      }
+  }
+};
+</script>
 
 
 
@@ -103,6 +109,3 @@ export default {
 //     currentUser() {
 //       return Meteor.user().username;
 //     }
-  }
-};
-</script>
