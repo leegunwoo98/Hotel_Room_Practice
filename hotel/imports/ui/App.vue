@@ -3,21 +3,21 @@ simple-todos/imports/ui/App.vue »
   <div className="container">
     <header>
       <h1>Hotel controller</h1>
-    <div v-if="username===null">
+    <div v-if="!currentUser">
       <div>Username: <input type="username" name="username" v-model="user"></div>
       <div>Password: <input type="password" name="password" v-model="password"></div>
       <div><input type="submit" value="Login" @click="login">
       <input type="submit" value="Register as client" @click="register_client">
       <input type="submit" value="Register as manager" @click="register_manager"></div>
     </div>
-    <h1 v-if="username!=null">
-     {{username}} logged in as {{profile}}
+    <h1 v-if="currentUser">
+     {{currentUsername}} logged in as {{currentProfile}}
       <input type="submit" value="logout" @click="logout">
     </h1>
     </header>
-    <ul>
+    <!-- <ul>
       <Items v-for="task in tasks" v-bind:key="task._id" v-bind:task="task" />
-    </ul>
+    </ul> -->
   </div>
 </template>
  
@@ -26,7 +26,7 @@ import Vue from "vue";
 // import Task from "./Task.vue";
 import { Meteor } from "meteor/meteor";
 import { Accounts } from 'meteor/accounts-base';
-import Items from "./Items.vue";
+// import Items from "./Items.vue";
  
 export default {
 //   components: {
@@ -39,47 +39,52 @@ export default {
       password:"",
       guest:"guest",
       manager:"manager",
-      newTask: "",
-      hideCompleted: false,
-      seen:false,
-      not_logged:true,
-      logged:false,
       userID:"",
-      profile:null
+      profile:null,
+      loggedIn:false
     };
   },
   methods: {
     register_client(event)  {
         Meteor.call("addUser",this.user,this.password,this.guest, function(error){
           alert(error.reason);
-        })
+        });
+        user="",
+        password=""
     },
     register_manager(event) {
         Meteor.call("addUser",this.user,this.password,this.manager, function(error){
           alert(error.reason);
-        })
+        });
+        user="",
+        password=""
     },
     login(event){
         Meteor.loginWithPassword(this.user,this.password, function(error){
           alert(error.reason);
-        }),
-        this.username=Meteor.user().username;
-        this.profile=Meteor.user().profile;
+        });
     },
     logout(event){
-        Meteor.logout(),
-        this.username=null
+        Meteor.logout();
     }
   },
 
   meteor: {
-      not_logged(){
-          let him="ddd";
-          return him
-      },
-      items(){
-
-      }
+    currentUser(){
+      return Meteor.user();
+    },
+    currentUsername(){
+      if(Meteor.user()){
+        return Meteor.user().username;}
+      else 
+        return "";
+    },
+    currentProfile(){
+      if(Meteor.user()){
+        return Meteor.user().profile;}
+      else
+        return "";
+    }
   }
 };
 </script>
