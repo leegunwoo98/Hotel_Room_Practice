@@ -3,7 +3,8 @@ import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
  
-export const Tasks = new Mongo.Collection('tasks');
+export const Items = new Mongo.Collection('items');
+export const Cart = new Mongo.Collection('cart');
  
 Meteor.methods({
     'addUser'(username,password,permission)
@@ -14,8 +15,4 @@ Meteor.methods({
             profile:permission
         })
     },
-    'loggin' (username,password)
-    {
-        Meteor.loginWithPassword(username,password)
-    }
 });
