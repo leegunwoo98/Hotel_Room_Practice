@@ -6,7 +6,7 @@ simple-todos/imports/ui/App.vue »
     <div v-if="!currentUser">
       <div>Username: <input type="username" name="username" v-model="user"></div>
       <div>Password: <input type="password" name="password" v-model="password"></div>
-      <div>Room number: <select name="rooms" v-model="room_number">
+      <div>Room number (optional): <select name="rooms" v-model="room_number">
         <option disabled value="">only for guests</option>
         <option v-for="room in rooms" v-bind:key="room._id" v-bind:value="room.roomname">{{room.roomname}}</option>
         </select>
@@ -43,6 +43,7 @@ simple-todos/imports/ui/App.vue »
       <input type="text" placeholder="room name" v-model="save_room_data">
       <input type="button" value="add" @click="save_room">
     </div>
+    <transition name="fade">
     <ul v-if="currentUser">
       <div v-for="item in items" v-bind:key="item._id" className="Items">
           <p>{{item.name}}</p>
@@ -57,12 +58,14 @@ simple-todos/imports/ui/App.vue »
           </div>
       </div>
     </ul>
+    </transition>
     <div v-if="currentProfile=='manager'" className="Items">
       <input type="text" placeholder="name of item" v-model="save_Item_Name"><br>
       <input type="text" placeholder="description" v-model="save_Item_Description"><br>
       <input type="button" value="save" @click="save_Item">
     </div>
-    <div class="cart" v-if="currentProfile=='guest'" style="float:left; width:45%; background:#ddd;">
+    <transition name="fade">
+    <div class="cart" v-if="currentProfile=='guest'&&show_cart" >
       <h1>cart</h1>
       <div v-for="item in carts" v-bind:key="item.key">
         Item: {{item.name}}  |  Status: {{item.status}}
@@ -74,33 +77,42 @@ simple-todos/imports/ui/App.vue »
         order
       </button>
     </div>
-    <div class="orders" v-if="currentProfile=='guest'" style="float:left; width:45%; background:#ddd;">
-      <h1>orders</h1>
-      <div v-for="item in orders" v-bind:key="item.key" style="color:#d1a141">
-        Item: {{item.name}}  |  status: ordered
+    </transition>
+    <transition name="fade">
+      <div class="orders" v-if="currentProfile=='guest'&&show_orders">
+        <h1>orders</h1>
+        <div v-for="item in orders" v-bind:key="item.key" style="color:#d1a141">
+          Item: {{item.name}}  |  status: ordered
+        </div>
+        <div v-for="item in recieved" v-bind:key="item.key">
+          Item: {{item.name}}  |  status: order received
+        </div>
       </div>
-      <div v-for="item in recieved" v-bind:key="item.key">
-        Item: {{item.name}}  |  status: order received
-      </div>
-    </div>
-    <div className="check_orders" v-if="currentProfile=='manager'" style="float:left; width:45%; background:#ddd;">
-      <h1>orders</h1>
-      <div v-for="item in incomingOrders" v-bind:key="item.key">
-        Item: {{item.name}}  |  status: pending check | ordered by {{item.user.username}} | {{item.user.profile.roomnumber}}
-        <button @click="recieve_order(item._id)">
-          approve
-        </button>
+      <div class="orders" v-if="currentProfile=='manager'&&show_orders" >
+        <h1>orders</h1>
+        <div v-for="item in incomingOrders" v-bind:key="item.key">
+          Item: {{item.name}}  |  status: pending check | ordered by {{item.user.username}} | {{item.user.profile.roomnumber}}
+          <button @click="recieve_order(item._id)">
+            approve
+          </button>
+          <button @click="deletes(item._id)">
+            delete
+          </button>
+        </div>
+        <div v-for="item in approvedOrders" v-bind:key="item.key">
+          Item: {{item.name}}  |  status: approved | ordered by: {{item.user.name}}
         <button @click="deletes(item._id)">
-          delete
+            delete
         </button>
+        </div>
       </div>
-      <div v-for="item in approvedOrders" v-bind:key="item.key">
-        Item: {{item.name}}  |  status: approved | ordered by: {{item.user.name}}
-      <button @click="deletes(item._id)">
-          delete
-      </button>
-      </div>
-    </div>
+    </transition>
+    <button class="toggle_orders" v-if="currentUser" v-on:click="show_orders=!show_orders">
+      orders
+    </button>
+    <button class="toggle_cart" v-if="currentProfile=='guest'" v-on:click="show_cart=!show_cart">
+      cart
+    </button>
   </div>
 </template>
  
@@ -128,7 +140,9 @@ export default {
       save_Item_Description:"",
       ordered_items:null,
       save_room_data:null,
-      room_number:null
+      room_number:null,
+      show_orders:false,
+      show_cart:false
     };
   },
   methods: {
@@ -189,6 +203,7 @@ export default {
             name: name,
             createdAt: new Date(), 
         });
+        this.show_cart=true;
     },
     deleteFromCart(item_id){
       Carts.remove(item_id);
@@ -198,7 +213,8 @@ export default {
         Carts.update(element._id,{
           $set : {status: "ordered"}
         });
-      })
+      });
+      this.show_orders=true;
     },
     recieve_order(item_id){
       Carts.update(item_id,{
