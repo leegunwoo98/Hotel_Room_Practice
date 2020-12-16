@@ -6,19 +6,42 @@ simple-todos/imports/ui/App.vue »
     <div v-if="!currentUser">
       <div>Username: <input type="username" name="username" v-model="user"></div>
       <div>Password: <input type="password" name="password" v-model="password"></div>
+      <div>Room number: <select name="rooms" v-model="room_number">
+        <option disabled value="">only for guests</option>
+        <option v-for="room in rooms" v-bind:key="room._id" v-bind:value="room.roomname">{{room.roomname}}</option>
+        </select>
+      </div>
       <div><input type="submit" value="Login" @click="login">
-      <input type="submit" value="Register as client" @click="register_client">
+      <input type="submit" value="Register as guest" @click="register_client">
       <input type="submit" value="Register as manager" @click="register_manager"></div>
     </div>
     <h1 v-if="currentUser">
-     {{currentUsername}} logged in as {{currentProfile}}
+     {{currentUsername}} - logged in as {{currentProfile}} <i v-if="currentRoom!=null">at {{currentRoom}} </i>
       <input type="submit" value="logout" @click="logout">
+    </h1> 
+    <h1 v-if="currentProfile=='guest'">
+      Change Room To : <select name="rooms" v-model="room_number" @change="change_room">
+        <option disabled value="">{{currentUser.profile.roomnumber}}</option>
+        <option v-for="room in rooms_except" v-bind:key="room._id" v-bind:value="room.roomname">{{room.roomname}}</option>
+        </select>
     </h1>
     </header>
+    <div v-if="currentProfile=='manager'">
+    Rooms
+    <h1 v-for="room in rooms" v-bind:key="room.key">
+      <strong>{{room.roomname}}</strong>
+      <button @click="deleteRoom(room)">
+      x
+      </button>
+      <div v-for="user in thisRoom" v-bind:key="user.key" v-bind:room="room">
+        {{user.name}}
+      </div>
+    </h1>
+    </div>
     <div v-if="currentProfile=='manager'" className="Rooms">
       addRooms
       <input type="text" placeholder="room name" v-model="save_room_data">
-      <input type="button" value="save" @click="save_room">
+      <input type="button" value="add" @click="save_room">
     </div>
     <ul v-if="currentUser">
       <div v-for="item in items" v-bind:key="item._id" className="Items">
@@ -63,7 +86,7 @@ simple-todos/imports/ui/App.vue »
     <div className="check_orders" v-if="currentProfile=='manager'" style="float:left; width:45%; background:#ddd;">
       <h1>orders</h1>
       <div v-for="item in incomingOrders" v-bind:key="item.key">
-        Item: {{item.name}}  |  status: {{item.status}}  by {{item.username}}
+        Item: {{item.name}}  |  status: pending check | ordered by {{item.user.username}} | {{item.user.profile.roomnumber}}
         <button @click="recieve_order(item._id)">
           approve
         </button>
@@ -72,7 +95,7 @@ simple-todos/imports/ui/App.vue »
         </button>
       </div>
       <div v-for="item in approvedOrders" v-bind:key="item.key">
-        Item: {{item.name}}  |  status: {{item.status}} | ordered by: {{item.username}}
+        Item: {{item.name}}  |  status: approved | ordered by: {{item.user.name}}
       <button @click="deletes(item._id)">
           delete
       </button>
@@ -87,6 +110,7 @@ import { Meteor } from "meteor/meteor";
 import { Accounts } from 'meteor/accounts-base';
 import { Items } from "../api/items.js";
 import { Carts } from "../api/items.js";
+import { Rooms } from "../api/items.js";
 // import { Carts } from "../api/cart.js"
 
 export default {
@@ -103,20 +127,33 @@ export default {
       save_Item_Name:"",
       save_Item_Description:"",
       ordered_items:null,
-      save_room_data:null
+      save_room_data:null,
+      room_number:null
     };
   },
   methods: {
     register_client(event)  {
-        Meteor.call("addUser",this.user,this.password,"guest", function(error){
-          alert(error.reason);
+        Meteor.call("addUser",this.user,this.password,"guest", this.room_number, function(error){
+          if(error==null)
+          {
+            alert("succesful registration")
+          }
+          else{
+            alert(error.reason);
+          }
         });
         user="",
         password=""
     },
     register_manager(event) {
-        Meteor.call("addUser",this.user,this.password,"manager", function(error){
-          alert(error.reason);
+        Meteor.call("addUser",this.user,this.password,"manager", null, function(error){
+          if(error==null)
+          {
+            alert("succesful registration")
+          }
+          else{
+            alert(error.reason);
+          }
         });
         user="",
         password=""
@@ -146,7 +183,7 @@ export default {
     addToCart(id,name){
         Carts.insert({
             item: id,
-            username: Meteor.user().username,
+            user: Meteor.user(),
             userID:Meteor.userId(),
             status: "Added To Cart",
             name: name,
@@ -172,7 +209,28 @@ export default {
       Carts.remove(item_id);
     },
     save_room(event){
-    }
+      if(Rooms.find({roomname:this.save_room_data}).count()==0)
+      {
+      Rooms.insert({
+        roomname:this.save_room_data
+      });
+      }
+      else{ alert("duplicate room name")}
+    },
+    deleteRoom(room){
+      Rooms.remove(room._id)
+      Meteor.call("updateUserRoom",room)
+    },
+    change_room(){
+      Meteor.users.update({_id:Meteor.userId()},{$set:{'profile.roomnumber':this.room_number}});
+    },
+    // thisRoom(room){
+    //   if(room!=null)
+    //   {
+    //   return Accounts.users.find({'profile.roomnuber':room.roomname}).fetch();
+
+    //   }
+    // }
   },
 
   meteor: {
@@ -187,7 +245,7 @@ export default {
     },
     currentProfile(){
       if(Meteor.user()){
-        return Meteor.user().profile;}
+        return Meteor.user().profile.permission;}
       else
         return "";
     },
@@ -208,6 +266,23 @@ export default {
     },
     approvedOrders(){
       return Carts.find({status:"recieved"},{ sort: { createdAt: -1 } }).fetch();
+    },
+    rooms(){
+      return Rooms.find({}).fetch();
+    },
+    currentRoom(){
+      if(Meteor.user())
+      return Meteor.user().profile.roomnumber;
+    },
+    rooms_except(){
+      if(Meteor.user()){
+      return Rooms.find({roomname:{$not:Meteor.user().profile.roomnumber}}).fetch();}
+    },
+    thisRoom(){
+      if(this.room!=null)
+      {
+      return Accounts.users.find({'profile.roomnuber':this.room.roomname}).fetch();
+      }
     }
   }
 };

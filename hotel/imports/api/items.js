@@ -8,12 +8,19 @@ export const Carts = new Mongo.Collection('carts');
 export const Rooms = new Mongo.Collection('rooms');
  
 Meteor.methods({
-    'addUser'(username,password,permission)
+    'addUser'(username,password,permissions,roomnumbers)
     {
         Accounts.createUser({
             username:username,
             password:password,
-            profile:permission
+            profile:{
+                permission:permissions,
+                roomnumber:roomnumbers
+            }
         })
     },
+    'updateUserRoom'(room)
+    {
+        Meteor.users.update({'profile.roomnumber':room.roomname},{$set:{'profile.roomnumber':null}});
+    }
 });
