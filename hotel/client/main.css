@@ -1,10 +1,11 @@
 body {
-  padding: 10px;
-  font-family: sans-serif;
-  background-color: #315481;
-  background-image: linear-gradient(to bottom, #315481, #918e82 100%);
+  padding: 20px;
+  text-align: center;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  /* background-color: #c3d9f5; */
+  background-image: linear-gradient(to bottom, #eaf3ff, #7d7de3 100%);
   background-attachment: fixed;
- 
+  /* left: 200px; */
   position: absolute;
   top: 0;
   bottom: 0;
@@ -14,8 +15,30 @@ body {
   padding: 0;
   margin: 0;
  
-  font-size: 14px;
+  font-size: 15px;
 }
+
+* button {
+  border-color: #7d7de3;
+  height: 23px;
+  width: 40px;
+  background-color: #ededed;
+}
+
+form {
+  color:rgb(240, 218, 255);
+}
+input:focus {
+  background-color: rgb(255, 245, 248);
+  border: 3px solid rgb(255, 239, 239);
+}
+input[type=text] {
+width: 25%;
+padding: 10px 20px;
+margin: 5px 0;
+box-sizing: border-box;
+}
+
 
 .guestLogin {
   
@@ -29,8 +52,8 @@ body {
 }
  
 header {
-  background: #d2edf4;
-  background-image: linear-gradient(to bottom, #d0edf5, #e1e5f0 100%);
+  background: #ece6ff;
+  /* background-image: linear-gradient(to bottom, #d0edf5, #e1e5f0 100%); */
   padding: 20px 15px 15px 15px;
   position: relative;
 }
