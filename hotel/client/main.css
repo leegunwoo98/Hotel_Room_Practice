@@ -121,8 +121,8 @@ li.checked .text {
 }
  
 li.private {
-  background: #eee;
-  border-color: #ddd;
+  background: #ece6ff;
+  border-color: rgb(0, 0, 0);
 }
  
 header .hide-completed {
