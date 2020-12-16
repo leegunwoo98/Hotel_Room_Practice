@@ -27,7 +27,7 @@ simple-todos/imports/ui/App.vue »
     </h1>
     </header>
     <div v-if="currentProfile=='manager'">
-    Rooms
+    Rooms:
     <h1 v-for="room in rooms" v-bind:key="room.key">
       <strong>{{room.roomname}}</strong>
       <button @click="deleteRoom(room)">
@@ -39,7 +39,7 @@ simple-todos/imports/ui/App.vue »
     </h1>
     </div>
     <div v-if="currentProfile=='manager'" className="Rooms">
-      addRooms
+      Add Room:
       <input type="text" placeholder="room name" v-model="save_room_data">
       <input type="button" value="add" @click="save_room">
     </div>
@@ -67,7 +67,7 @@ simple-todos/imports/ui/App.vue »
       <div v-for="item in carts" v-bind:key="item.key">
         Item: {{item.name}}  |  status: {{item.status}}
         <button @click="deleteFromCart(item._id)">
-          ×
+           ×
         </button>
       </div>
       <button @click="order(carts)">
