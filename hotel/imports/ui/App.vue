@@ -44,9 +44,9 @@ simple-todos/imports/ui/App.vue »
       <input type="button" value="add" @click="save_room">
     </div>
     <transition name="fade">
-    <ul v-if="currentUser">
-      <div v-for="item in items" v-bind:key="item._id" className="Items">
-          <p>{{item.name}}</p>
+      <div v-if="currentUser" >
+      <div class="items" v-for="item in items" v-bind:key="item._id">
+          <strong><i>{{item.name}}</i></strong>
           <div>
           <p className="description">{{item.description}}</p>
           <button v-if="currentProfile=='guest'" @click="addToCart(item._id,item.name)">
@@ -57,9 +57,9 @@ simple-todos/imports/ui/App.vue »
           </button>
           </div>
       </div>
-    </ul>
+      </div>
     </transition>
-    <div v-if="currentProfile=='manager'" className="Items">
+    <div v-if="currentProfile=='manager'" className="Items" style="margin:30pt;">
       <input type="text" placeholder="name of item" v-model="save_Item_Name"><br>
       <input type="text" placeholder="description" v-model="save_Item_Description"><br>
       <input type="button" value="save" @click="save_Item">
