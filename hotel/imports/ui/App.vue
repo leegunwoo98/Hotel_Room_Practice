@@ -26,11 +26,11 @@ simple-todos/imports/ui/App.vue »
         </select>
     </h1>
     </header>
-    <div v-if="currentProfile=='manager'">
+    <div class="rooms" v-if="currentProfile=='manager'">
     Rooms:
     <h1 v-for="room in rooms" v-bind:key="room.key">
       <strong>{{room.roomname}}</strong>
-      <button @click="deleteRoom(room)">
+      <button class="deleteRoom" @click="deleteRoom(room)">
       x
       </button>
       <div v-for="user in thisRoom" v-bind:key="user.key" v-bind:room="room">
@@ -39,7 +39,7 @@ simple-todos/imports/ui/App.vue »
     </h1>
     </div>
     <div v-if="currentProfile=='manager'" className="Rooms">
-      Add Room:
+      <a style="color:white"> Room: </a>
       <input type="text" placeholder="room name" v-model="save_room_data">
       <input type="button" value="add" @click="save_room">
     </div>
@@ -73,7 +73,7 @@ simple-todos/imports/ui/App.vue »
            ×
         </button>
       </div>
-      <button @click="order(carts)">
+      <button class="order_all" @click="order(carts)">
         order
       </button>
     </div>
