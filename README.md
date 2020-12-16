@@ -13,4 +13,4 @@ Here are the states
 Secondly, we were also able to implement a chat service between the manager and the guests
 
 # Notes
-Meteor was too heavy to build on the aws system. As a result, the site is hosted on 183.98.54.147:3000
+Meteor was too heavy to build on the aws system (the program would stop when building to the browser). As a result, the site is hosted locally on 183.98.54.147:3000, which will be closed when not used, but will be opened when requested.
