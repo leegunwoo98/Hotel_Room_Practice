@@ -119,6 +119,25 @@ simple-todos/imports/ui/App.vue »
     <button class="toggle_cart" v-if="currentProfile=='guest'" v-on:click="show_cart=!show_cart">
       cart
     </button>
+    <button class="toggle_chat" v-if="currentUser" @click="showChat">
+      chat
+    </button>
+    <transition name=fade>
+      <div class="chat" v-if="currentUser && show_chats">
+        <div class="messageBox">
+        <div v-for="Message in Messages" v-bind:key="Message._id">{{Message.From}} : {{Message.Message}}</div>
+        </div>
+        <input type=text placeholder="message" class="sendmessage" v-model="message">
+        <button class="sendmessageButton" @click="sendMessage">
+          send
+        </button>
+      </div>
+      <div class="chat" v-if="currentUser && show_chat_lists">
+        <div v-for="from in From" v-bind:key="from._id" @click="showChat_manager">
+          <div class="chat_list_box"> {{from.username}}</div>
+        </div>
+      </div>
+      </transition>
   </div>
 </template>
  
@@ -129,6 +148,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Items } from "../api/items.js";
 import { Carts } from "../api/items.js";
 import { Rooms } from "../api/items.js";
+import { Chats } from "../api/items.js";
 // import { Carts } from "../api/cart.js"
 
 export default {
@@ -148,7 +168,10 @@ export default {
       save_room_data:null,
       room_number:null,
       show_orders:false,
-      show_cart:false
+      show_cart:false,
+      show_chats:false,
+      show_chat_lists:false,
+      message:""
     };
   },
   methods: {
@@ -246,13 +269,36 @@ export default {
     change_room(){
       Meteor.users.update({_id:Meteor.userId()},{$set:{'profile.roomnumber':this.room_number}});
     },
-    // thisRoom(room){
-    //   if(room!=null)
-    //   {
-    //   return Accounts.users.find({'profile.roomnuber':room.roomname}).fetch();
+    sendMessage(event){
+      if(Meteor.user())
+      {
+        if(Meteor.user().profile.permission=="guest")
+        {
+          Chats.insert({
+            From:Meteor.user().username,
+            To:"manager",
+            Message:this.message,
+            createdAt:new Date()
+          });
+        }
+      }
+    },
+    showChat(event){
+      if(Meteor.user())
+      {
+        if(Meteor.user().profile.permission=="guest")
+        {
+          this.show_chats=!this.show_chats
+        }
+        else{
+          this.show_chat_lists=!this.show_chat_lists
+        }
+      }
+    },
+    showChat_manager()
+    {
 
-    //   }
-    // }
+    }
   },
 
   meteor: {
@@ -304,6 +350,24 @@ export default {
       if(this.room!=null)
       {
       return Accounts.users.find({'profile.roomnuber':this.room.roomname}).fetch();
+      }
+    },
+    Messages(){
+      if(Meteor.user())
+      {
+        if(Meteor.user().profile.permission=="guest")
+        {
+          return Chats.find({$or:[{From:Meteor.user().username}]}, { sort: { createdAt: 1 } }).fetch();
+        }
+      }
+    },
+    From(){
+      if(Meteor.user())
+      {
+        if(Meteor.user().profile.permission=="manager")
+        {
+          return Accounts.users.find({}).fetch();
+        }
       }
     }
   }

@@ -140,9 +140,9 @@ form {
   background:#E5B459;
   position: fixed;
   bottom: 0;
-  width:49%;
+  width:33%;
   height:7%;
-  right:0;
+  left:33%;
   font-size:x-large;
   color:ivory;
 }
@@ -150,13 +150,40 @@ form {
   background:#E5B459;
   position: fixed;
   bottom: 0;
-  width:49%;
+  width:33%;
   height:7%;
   left:0;
   font-size:x-large;
   color:ivory;
 }
-
+.toggle_chat {
+  background:#E5B459;
+  position: fixed;
+  bottom: 0;
+  width:33%;
+  height:7%;
+  right:0;
+  font-size:x-large;
+  color:ivory;
+}
+.chat{
+  position:fixed;
+  bottom:7%;
+  right:0;
+  height: 30%;
+  float:left; width:33%; background:#ddd;
+}
+.sendmessage{
+  position:fixed;
+  bottom:7%;
+  right:6%;
+  width:30%
+}
+.sendmessageButton{
+  position:fixed;
+  bottom:8.5%;
+  right:1.8%
+}
 .items{
   width: 20%;
   margin:30pt;
@@ -164,19 +191,26 @@ form {
   float:left;
   padding:30pt
 }
+.messageBox{
+  position:fixed;
+  bottom:15%;
+  right:0;
+  float:left; width:33%;
+  text-align:left;
+}
 
 .orders{
   position:fixed;
   bottom:7%;
-  right:0;
-  float:left; width:49%; background:#ddd;
+  left:33%;
+  float:left; width:33%; background:#ddd;
 }
 
 .cart{
   position: fixed;
   bottom:7%;
   left:0;
-  float:left; width:49%; background:#ddd;
+  float:left; width:33%; background:#ddd;
 }
 
 li {
@@ -209,6 +243,16 @@ header .hide-completed {
  
 .toggle-private {
   margin-left: 5px;
+}
+
+.chat_list_box {
+  height:30pt;
+  width: 90%;
+  margin: 5%;
+  text-align:left;
+  padding:auto;
+  background:cadetblue;
+  color:white;
 }
  
 @media (max-width: 600px) {
