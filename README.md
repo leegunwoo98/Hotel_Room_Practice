@@ -10,5 +10,7 @@ Here are the states
 - ordered : item is ordered by the client
 - receieved : the order is checked out by the manager
 
+Secondly, we were also able to implement a chat service between the manager and the guests
+
 # Notes
 Meteor was too heavy to build on the aws system. As a result, the site is hosted on 183.98.54.147:3000

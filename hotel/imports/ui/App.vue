@@ -299,6 +299,7 @@ export default {
         if(Meteor.user().profile.permission=="guest")
         {
           this.show_chats=!this.show_chats
+          this.show_chat_lists=false;
         }
         else{
           this.show_chat_lists=!this.show_chat_lists
