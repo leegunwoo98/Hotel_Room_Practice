@@ -125,6 +125,7 @@ simple-todos/imports/ui/App.vue »
     <transition name=fade>
       <div class="chat" v-if="currentUser && show_chats">
         <div class="messageBox">
+        <button class="back" v-if="currentProfile=='manager'" v-on:click="show_chat_lists=true,show_chats=false"> back </button>
         <div v-for="Message in Messages" v-bind:key="Message._id">{{Message.From}} : {{Message.Message}}</div>
         </div>
         <input type=text placeholder="message" class="sendmessage" v-model="message">
@@ -133,8 +134,8 @@ simple-todos/imports/ui/App.vue »
         </button>
       </div>
       <div class="chat" v-if="currentUser && show_chat_lists">
-        <div v-for="from in From" v-bind:key="from._id" @click="showChat_manager">
-          <div class="chat_list_box"> {{from.username}}</div>
+        <div v-for="to in From" v-bind:key="to._id" @click="showChat_manager(to)">
+          <div class="chat_list_box"> {{to.username}}</div>
         </div>
       </div>
       </transition>
@@ -171,7 +172,8 @@ export default {
       show_cart:false,
       show_chats:false,
       show_chat_lists:false,
-      message:""
+      message:"",
+      sendingTo:null
     };
   },
   methods: {
@@ -281,6 +283,14 @@ export default {
             createdAt:new Date()
           });
         }
+        else{
+            Chats.insert({
+            From:"manager",
+            To:this.sendingTo,
+            Message:this.message,
+            createdAt:new Date()
+          })
+        }
       }
     },
     showChat(event){
@@ -295,9 +305,11 @@ export default {
         }
       }
     },
-    showChat_manager()
+    showChat_manager(to)
     {
-
+      this.sendingTo=to,
+      this.show_chats=true,
+      this.show_chat_lists=false
     }
   },
 
@@ -357,7 +369,11 @@ export default {
       {
         if(Meteor.user().profile.permission=="guest")
         {
-          return Chats.find({$or:[{From:Meteor.user().username}]}, { sort: { createdAt: 1 } }).fetch();
+          return Chats.find({$or:[{From:Meteor.user().username},{From:"manager"}]}, { sort: { createdAt: 1 } }).fetch();
+        }
+        else
+        {
+          return Chats.find({$or:[{From:this.sendingTo},{From:"manager"}]}, { sort: { createdAt: 1 } }).fetch();
         }
       }
     },
