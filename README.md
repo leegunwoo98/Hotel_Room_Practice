@@ -1,4 +1,11 @@
 # CSE330
-REPLACE-THIS-TEXT-WITH-YOUR-STUDENT-ID
 
-REPLACE-THIS-TEXT-WITH-YOUR-PARTNERS-STUDENT-ID-IF-WORKING-IN-A-GROUP
+457175
+476801
+
+# Creative Portion
+We were able to create different states for a particular order from a client.
+Here are the states
+- added to cart : addes item to a cart
+- ordered : item is ordered by the client
+- receieved : the order is checked out by the manager

@@ -74,33 +74,38 @@ simple-todos/imports/ui/App.vue »
         order
       </button>
     </div>
-    <div class="orders" v-if="currentProfile=='guest'" style="float:left; width:45%; background:#ddd;">
-      <h1>orders</h1>
-      <div v-for="item in orders" v-bind:key="item.key" style="color:#d1a141">
-        Item: {{item.name}}  |  status: ordered
+    <button v-on:click="show_orders=!show_orders">
+      orders
+    </button>
+    <transition name="fade">
+      <div class="orders" v-if="currentProfile=='guest'&&show_orders" style="float:left; width:45%; background:#ddd;">
+        <h1>orders</h1>
+        <div v-for="item in orders" v-bind:key="item.key" style="color:#d1a141">
+          Item: {{item.name}}  |  status: ordered
+        </div>
+        <div v-for="item in recieved" v-bind:key="item.key">
+          Item: {{item.name}}  |  status: order received
+        </div>
       </div>
-      <div v-for="item in recieved" v-bind:key="item.key">
-        Item: {{item.name}}  |  status: order received
-      </div>
-    </div>
-    <div className="check_orders" v-if="currentProfile=='manager'" style="float:left; width:45%; background:#ddd;">
-      <h1>orders</h1>
-      <div v-for="item in incomingOrders" v-bind:key="item.key">
-        Item: {{item.name}}  |  status: pending check | ordered by {{item.user.username}} | {{item.user.profile.roomnumber}}
-        <button @click="recieve_order(item._id)">
-          approve
-        </button>
+      <div className="check_orders" v-if="currentProfile=='manager'&&show_orders" style="float:left; width:45%; background:#ddd;">
+        <h1>orders</h1>
+        <div v-for="item in incomingOrders" v-bind:key="item.key">
+          Item: {{item.name}}  |  status: pending check | ordered by {{item.user.username}} | {{item.user.profile.roomnumber}}
+          <button @click="recieve_order(item._id)">
+            approve
+          </button>
+          <button @click="deletes(item._id)">
+            delete
+          </button>
+        </div>
+        <div v-for="item in approvedOrders" v-bind:key="item.key">
+          Item: {{item.name}}  |  status: approved | ordered by: {{item.user.name}}
         <button @click="deletes(item._id)">
-          delete
+            delete
         </button>
+        </div>
       </div>
-      <div v-for="item in approvedOrders" v-bind:key="item.key">
-        Item: {{item.name}}  |  status: approved | ordered by: {{item.user.name}}
-      <button @click="deletes(item._id)">
-          delete
-      </button>
-      </div>
-    </div>
+    <transition>
   </div>
 </template>
  
@@ -128,7 +133,8 @@ export default {
       save_Item_Description:"",
       ordered_items:null,
       save_room_data:null,
-      room_number:null
+      room_number:null,
+      show_orders:false
     };
   },
   methods: {
