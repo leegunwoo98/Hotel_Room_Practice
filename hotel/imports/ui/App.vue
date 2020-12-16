@@ -100,7 +100,7 @@ simple-todos/imports/ui/App.vue »
           </button>
         </div>
         <div v-for="item in approvedOrders" v-bind:key="item.key">
-          Item: {{item.name}}  |  status: approved | ordered by: {{item.user.name}}
+          Item: {{item.name}}  |  status: approved | ordered by: {{item.user.username}}
         <button @click="deletes(item._id)">
             delete
         </button>
