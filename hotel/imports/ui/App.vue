@@ -65,7 +65,7 @@ simple-todos/imports/ui/App.vue »
     <div class="cart" v-if="currentProfile=='guest'" style="float:left; width:45%; background:#ddd;">
       <h1>cart</h1>
       <div v-for="item in carts" v-bind:key="item.key">
-        Item: {{item.name}}  |  status: {{item.status}}
+        Item: {{item.name}}  |  Status: {{item.status}}
         <button @click="deleteFromCart(item._id)">
            ×
         </button>
