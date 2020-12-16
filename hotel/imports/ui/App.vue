@@ -2,7 +2,9 @@ simple-todos/imports/ui/App.vue »
 <template>
   <div className="container">
     <header>
-      <h1>Hotel Room Service</h1>
+      <div>
+      <h1 id="title">Hotel Room Service</h1>
+      </div>
     <div v-if="!currentUser">
       <div>Username: <input type="username" name="username" v-model="user"></div>
       <div>Password: <input type="password" name="password" v-model="password"></div>
@@ -15,16 +17,20 @@ simple-todos/imports/ui/App.vue »
       <input type="submit" value="Register as guest" @click="register_client">
       <input type="submit" value="Register as manager" @click="register_manager"></div>
     </div>
+    <div id="currentusername">
     <h1 v-if="currentUser">
      {{currentUsername}} - logged in as {{currentProfile}} <i v-if="currentRoom!=null">at {{currentRoom}} </i>
       <input type="submit" value="logout" @click="logout">
     </h1> 
+    </div>
+    <div id="currentprofileroom">
     <h1 v-if="currentProfile=='guest'">
       Change Room To : <select name="rooms" v-model="room_number" @change="change_room">
         <option disabled value="">{{currentUser.profile.roomnumber}}</option>
         <option v-for="room in rooms_except" v-bind:key="room._id" v-bind:value="room.roomname">{{room.roomname}}</option>
         </select>
     </h1>
+    </div>
     </header>
     <div class="rooms" v-if="currentProfile=='manager'">
     Rooms:
@@ -82,16 +88,16 @@ simple-todos/imports/ui/App.vue »
       <div class="orders" v-if="currentProfile=='guest'&&show_orders">
         <h1>orders</h1>
         <div v-for="item in orders" v-bind:key="item.key" style="color:#d1a141">
-          Item: {{item.name}}  |  status: ordered
+          Item: {{item.name}}  |  Status: ordered
         </div>
         <div v-for="item in recieved" v-bind:key="item.key">
-          Item: {{item.name}}  |  status: order received
+          Item: {{item.name}}  |  Status: order received
         </div>
       </div>
       <div class="orders" v-if="currentProfile=='manager'&&show_orders" >
         <h1>orders</h1>
         <div v-for="item in incomingOrders" v-bind:key="item.key">
-          Item: {{item.name}}  |  status: pending check | ordered by {{item.user.username}} | {{item.user.profile.roomnumber}}
+          Item: {{item.name}}  |  Status: pending check | Ordered by: {{item.user.username}} | Room No: {{item.user.profile.roomnumber}}
           <button @click="recieve_order(item._id)">
             approve
           </button>
@@ -100,7 +106,7 @@ simple-todos/imports/ui/App.vue »
           </button>
         </div>
         <div v-for="item in approvedOrders" v-bind:key="item.key">
-          Item: {{item.name}}  |  status: approved | ordered by: {{item.user.name}}
+          Item: {{item.name}}  |  Status: approved | Ordered by: {{item.user.name}}
         <button @click="deletes(item._id)">
             delete
         </button>
