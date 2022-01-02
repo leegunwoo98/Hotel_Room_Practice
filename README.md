@@ -1,9 +1,4 @@
-# CSE330
-
-457175
-476801
-
-# Creative Portion
+# Functionality
 We were able to create different states for a particular order from a client.
 Here are the states
 - added to cart : addes item to a cart
